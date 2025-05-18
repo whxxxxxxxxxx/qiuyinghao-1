@@ -36,3 +36,30 @@
     transform: rotate(360deg);
   }
 }
+
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* 防止内容溢出 */
+}
+
+.hospital-logo {
+  height: 30px; /* 限制高度为30px */
+  width: auto; /* 保持宽高比 */
+  max-width: 100px; /* 限制最大宽度为100px */
+  object-fit: contain; /* 确保图片完全显示且不变形 */
+}
+
+.site-layout-background {
+  background: #fff;
+}
+
+.ant-layout-header h1 {
+  margin: 0;
+  line-height: 64px;
+}
