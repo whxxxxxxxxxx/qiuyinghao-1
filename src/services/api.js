@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_BASE_URL = 'http://101.126.131.6:8080/api'; // 根据您的后端API地址调整
-const API_BASE_URL = 'http://127.0.0.1:8080/api'
+const API_BASE_URL = 'http://101.126.131.6:8080/api'; // 根据您的后端API地址调整
+// const API_BASE_URL = 'http://127.0.0.1:8080/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
