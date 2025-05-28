@@ -1,37 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Card, message, Spin } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Card, message, Spin, Select } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getDoctor, createDoctor, updateDoctor } from '../../services/api';
+import { getDoctor, createDoctor, updateDoctor, getDepartmentList } from '../../services/api';
 
 const DoctorDetail = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [departments, setDepartments] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
-  // 修改判断逻辑，确保当 id 为 'new' 时不会进入编辑模式
   const isEdit = id && id !== 'new';
 
   useEffect(() => {
+    fetchDepartments();
     if (isEdit && id && id !== 'undefined') {
       fetchDoctorDetail();
     }
   }, [id]);
 
-  const fetchDoctorDetail = async () => {
-    if (!id || id === 'undefined') {
-      message.error('无效的医生ID');
-      navigate('/doctor');
-      return;
+  const fetchDepartments = async () => {
+    try {
+      const res = await getDepartmentList();
+      setDepartments(Array.isArray(res.data) ? res.data : (res.data.data || []));
+    } catch (e) {
+      message.error('获取科室列表失败');
     }
-    
+  };
+
+  const fetchDoctorDetail = async () => {
     setLoading(true);
     try {
-      const response = await getDoctor(id);
-      form.setFieldsValue(response.data);
-    } catch (error) {
+      const res = await getDoctor(id);
+      form.setFieldsValue({
+        name: res.data.name,
+        departmentId: res.data.departmentId || (res.data.department && res.data.department.ID),
+      });
+    } catch (e) {
       message.error('获取医生详情失败');
-      console.error('获取医生详情失败:', error);
     } finally {
       setLoading(false);
     }
@@ -48,9 +54,8 @@ const DoctorDetail = () => {
         message.success('创建成功');
       }
       navigate('/doctor');
-    } catch (error) {
+    } catch (e) {
       message.error(`${isEdit ? '更新' : '创建'}失败`);
-      console.error(`${isEdit ? '更新' : '创建'}失败:`, error);
     } finally {
       setSubmitting(false);
     }
@@ -58,12 +63,12 @@ const DoctorDetail = () => {
 
   return (
     <Spin spinning={loading}>
-      <Card title={isEdit ? '编辑医生信息' : '新增医生信息'} style={{ margin: 24 }}>
+      <Card title={isEdit ? '编辑医生' : '新增医生'} style={{ margin: 24 }}>
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          initialValues={{ name: '', department: '' }}
+          initialValues={{ name: '', departmentId: undefined }}
         >
           <Form.Item
             name="name"
@@ -74,11 +79,15 @@ const DoctorDetail = () => {
           </Form.Item>
 
           <Form.Item
-            name="department"
-            label="科室"
-            rules={[{ required: true, message: '请输入科室' }]}
+            name="departmentId"
+            label="所属科室"
+            rules={[{ required: true, message: '请选择所属科室' }]}
           >
-            <Input placeholder="请输入科室" />
+            <Select placeholder="请选择所属科室">
+              {departments.map(dep => (
+                <Select.Option key={dep.ID} value={dep.ID}>{dep.name}</Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item>

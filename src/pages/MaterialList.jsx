@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Input, message, Modal, Popconfirm } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getDoctorList, deleteDoctor } from '../../services/api';
+import { getMaterialList, deleteMaterial } from '../services/api';
 
-const DoctorList = () => {
+const MaterialList = () => {
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchName, setSearchName] = useState('');
-  const [searchDepartment, setSearchDepartment] = useState('');
   const navigate = useNavigate();
 
-  const fetchDoctors = async (p = page, ps = pageSize, filters = {}) => {
+  const fetchMaterials = async (p = page, ps = pageSize, filters = {}) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -25,54 +24,50 @@ const DoctorList = () => {
         params.append('name', filters.name);
       }
       
-      if (filters.department) {
-        params.append('department', filters.department);
-      }
-      
-      const response = await getDoctorList(params);
-      setDataSource(response.data.data || []);
-      setTotal(response.data.total || 0);
+      const response = await getMaterialList(params);
+      // 兼容后端返回数组或对象格式
+      const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      const total = response.data.total || data.length || 0;
+      setDataSource(data);
+      setTotal(total);
     } catch (error) {
-      message.error('获取医生列表失败');
-      console.error('获取医生列表失败:', error);
+      message.error('获取材料列表失败');
+      console.error('获取材料列表失败:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDoctors();
+    fetchMaterials();
   }, []);
 
   const handleSearch = () => {
     setPage(1);
-    fetchDoctors(1, pageSize, {
-      name: searchName,
-      department: searchDepartment
+    fetchMaterials(1, pageSize, {
+      name: searchName
     });
   };
 
   const handleReset = () => {
     setSearchName('');
-    setSearchDepartment('');
     setPage(1);
-    fetchDoctors(1, pageSize, {});
+    fetchMaterials(1, pageSize, {});
   };
 
   const handleTableChange = (pagination) => {
     setPage(pagination.current);
     setPageSize(pagination.pageSize);
-    fetchDoctors(pagination.current, pagination.pageSize, {
-      name: searchName,
-      department: searchDepartment
+    fetchMaterials(pagination.current, pagination.pageSize, {
+      name: searchName
     });
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteDoctor(id);
+      await deleteMaterial(id);
       message.success('删除成功');
-      fetchDoctors();
+      fetchMaterials();
     } catch (error) {
       message.error('删除失败');
       console.error('删除失败:', error);
@@ -81,24 +76,24 @@ const DoctorList = () => {
 
   const columns = [
     {
-      title: '医生姓名',
+      title: '材料名称',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: '科室',
-      key: 'department',
-      render: (_, record) => record.department?.name || '-'
+      title: '材料价格',
+      dataIndex: 'price',
+      key: 'price',
     },
     {
       title: '操作',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type="link" onClick={() => navigate(`/doctor/${record.ID}`)}>
+          <Button type="link" onClick={() => navigate(`/material/${record.ID}`)}>
             查看
           </Button>
-          <Button type="link" onClick={() => navigate(`/doctor/edit/${record.ID}`)}>
+          <Button type="link" onClick={() => navigate(`/material/edit/${record.ID}`)}>
             编辑
           </Button>
           <Popconfirm
@@ -121,15 +116,9 @@ const DoctorList = () => {
       <div style={{ marginBottom: 16 }}>
         <Space>
           <Input
-            placeholder="医生姓名"
+            placeholder="材料名称"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
-            style={{ width: 200 }}
-          />
-          <Input
-            placeholder="科室"
-            value={searchDepartment}
-            onChange={(e) => setSearchDepartment(e.target.value)}
             style={{ width: 200 }}
           />
           <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
@@ -139,9 +128,9 @@ const DoctorList = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => navigate('/doctor/new')}
+            onClick={() => navigate('/material/new')}
           >
-            新增医生
+            新增材料
           </Button>
         </Space>
       </div>
@@ -164,4 +153,4 @@ const DoctorList = () => {
   );
 };
 
-export default DoctorList;
+export default MaterialList; 

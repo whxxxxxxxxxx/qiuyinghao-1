@@ -209,7 +209,7 @@ const ExaminationDetail = () => {
             <Select placeholder="请选择开单医生">
               {Array.isArray(doctors) && doctors.map(doctor => (
                 <Option key={doctor.ID || doctor.id} value={doctor.ID || doctor.id}>
-                  {doctor.name} ({doctor.department})
+                  {doctor.name} ({doctor.department?.name || '-'})
                 </Option>
               ))}
             </Select>

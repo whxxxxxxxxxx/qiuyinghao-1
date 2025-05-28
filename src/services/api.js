@@ -46,6 +46,17 @@ export const deleteDoctor = (id) => {
   return api.delete(`/doctors/${id}`);
 };
 
+// 材料相关API
+export const getMaterialList = () => api.get('/materials');
+export const getMaterial = (id) => api.get(`/materials/${id}`);
+export const createMaterial = (data) => api.post('/materials', data);
+export const updateMaterial = (id, data) => api.put(`/materials/${id}`, data);
+export const deleteMaterial = (id) => api.delete(`/materials/${id}`);
+
+// 检查项目材料相关API
+export const addMaterialToItem = (itemId, materialId, quantity) => api.post(`/examination-items/materials/${itemId}/${materialId}`, { quantity });
+export const removeMaterialFromItem = (itemId, materialId) => api.delete(`/examination-items/materials/${itemId}/${materialId}`);
+
 // 导出病历检查记录为Excel
 export const exportExaminationsToExcel = (params) => {
   const queryString = new URLSearchParams(params).toString();
@@ -56,5 +67,15 @@ export const exportExaminationsToExcel = (params) => {
   
   return Promise.resolve();
 };
+
+// 科室相关API
+export const getDepartmentList = () => api.get('/departments');
+export const getDepartment = (id) => api.get(`/departments/${id}`);
+export const createDepartment = (data) => api.post('/departments', data);
+export const updateDepartment = (id, data) => api.put(`/departments/${id}`, data);
+export const deleteDepartment = (id) => api.delete(`/departments/${id}`);
+
+// 医院运营看板API
+export const getDashboardSummary = () => api.get('/dashboard/summary');
 
 export default api;

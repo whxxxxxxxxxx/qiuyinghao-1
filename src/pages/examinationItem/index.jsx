@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber, message, Space, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { getExaminationItemList, createExaminationItem, updateExaminationItem, deleteExaminationItem } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const ExaminationItemList = () => {
   const [form] = Form.useForm();
@@ -9,6 +10,7 @@ const ExaminationItemList = () => {
   const [dataSource, setDataSource] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const navigate = useNavigate();
 
   const fetchExaminationItemList = () => {
     setLoading(true);
@@ -101,6 +103,17 @@ const ExaminationItemList = () => {
       render: (text) => `¥${text.toFixed(2)}`
     },
     {
+      title: '材料花费',
+      key: 'materialCost',
+      render: (_, record) => {
+        const total = (record.materials || []).reduce(
+          (sum, m) => sum + (m.material?.price || 0) * (m.quantity || 0),
+          0
+        );
+        return `¥${total.toFixed(2)}`;
+      }
+    },
+    {
       title: '成本比例',
       dataIndex: 'costRatio',
       key: 'costRatio',
@@ -134,6 +147,9 @@ const ExaminationItemList = () => {
               删除
             </Button>
           </Popconfirm>
+          <Button type="link" onClick={() => navigate(`/examinationItem/${record.ID}/materials`)}>
+            管理材料
+          </Button>
         </Space>
       ),
     },

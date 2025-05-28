@@ -1,0 +1,36 @@
+.hospital-intro {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hospital-intro .ant-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.hospital-intro .ant-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hospital-intro .ant-card-head-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+.hospital-intro .ant-card-body {
+  padding: 16px;
+}
+
+.hospital-intro .ant-typography {
+  color: #666;
+  line-height: 1.6;
+}
+
+.hospital-intro .ant-divider {
+  margin: 16px 0;
+} 
